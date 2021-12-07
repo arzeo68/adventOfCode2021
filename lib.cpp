@@ -44,3 +44,28 @@ std::vector<std::pair<std::string, int>> readFileTextNumber(std::string fileName
     }
     return lines;
 }
+
+int binaryToDecimal(std::string binary)
+{
+    int decimal = 0;
+    int base = 1;
+    int length = binary.length();
+    for (int i = length - 1; i >= 0; i--) {
+        if (binary[i] == '1') {
+            decimal += base;
+        }
+        base *= 2;
+    }
+    return decimal;
+}
+
+std::vector<int> stringToIntArray(std::string str, char separator)
+{
+    std::vector<int> array;
+    std::stringstream ss(str);
+    std::string token;
+    while (std::getline(ss, token, separator)) {
+        array.push_back(std::stoi(token));
+    }
+    return array;
+}

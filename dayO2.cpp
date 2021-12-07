@@ -2,7 +2,7 @@
 // Created by alexis on 05/12/2021.
 //
 
-#include "../header.hpp"
+#include "header.hpp"
 
 void day02Part1() {
     std::vector<std::pair<std::string, int>> input = readFileTextNumber("../input");

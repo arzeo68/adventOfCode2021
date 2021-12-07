@@ -7,4 +7,8 @@ add_executable(adventOfCode
         main.cpp
         header.hpp
         lib.cpp
-        day02/dayO2.cpp)
+        dayO2.cpp
+        day03.cpp
+        day04.cpp
+        day05.cpp
+        day06.cpp)
