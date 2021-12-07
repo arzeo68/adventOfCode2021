@@ -1,115 +1,111 @@
-//
-// Created by alexis on 06/12/2021.
-//
-
+#include <iostream>
+#include <fstream>
 #include <sstream>
-#include "header.hpp"
+#include <vector>
+#include <string>
 
-int computeResult(std::vector<std::vector<int>> board, int lastNumber) {
-    int result = 0;
-    for (int i = 0; i < board.size(); i++) {
-        for (int j = 0; j < board[i].size(); j++) {
-            if (board[i][j] != -1) {
-                result += board[i][j];
-            }
-        }
-    }
-    return result * lastNumber;
-}
+using namespace std;
 
-int checkWinnerBoard(std::vector<std::vector<std::vector<int>>> boards) {
-    for (int i = 0; i < boards.size(); i++) {
-        // line
-        bool boardValid = true;
-
-        for (int line = 0; line < 5; line++) {
-            for (int collumn = 0; collumn < 5; collumn++) {
-                if (boards[i][line][collumn] != -1) boardValid = false;
-            }
-            if (boardValid) return i;
-        }
-
-
-
-
-        // column
-    }
-    return -1;
-}
-
-void printBoard(std::vector<std::vector<int>> board) {
-    for (int i = 0; i < board.size(); i++) {
-        for (int j = 0; j < board[i].size(); j++) {
-            std::cout << board[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
-void updateBoard(std::vector<std::vector<std::vector<int>>> &boards, int newNumber) {
-    for (int i = 0; i < boards.size(); i++) {
-        for (int j = 0; j < boards[i].size(); j++) {
-            for (int k = 0; k < boards[i][j].size(); k++) {
-                if (boards[i][j][k] == newNumber) {
-                    boards[i][j][k] = -1;
-                }
-            }
-        }
-    }
-}
-
-std::vector<int> computeBoardLine(std::string text) {
-    std::vector<int> numbers;
-    for (int i = 0; i < text.size(); i++) {
-        while (text[i] == ' ' && i < text.size()) {
-            i++;
-        }
-        std::string number = "";
-        while (text[i] != ' ' && i < text.size()) {
-            number += text[i];
-            i++;
-        }
-        numbers.push_back(std::stoi(number));
-    }
-    return numbers;
-}
-
-std::vector<std::vector<std::vector<int>>> computeGameBoard(std::vector<std::string> input) {
-    std::vector<std::vector<std::vector<int>>> result;
-    for (int i = 2; i < input.size(); i++) {
-        std::vector<std::vector<int>> board;
-        for (int line = 0; line < 5; line ++, i++) {
-            board.emplace_back(computeBoardLine(input[i]));
-        }
-        result.push_back(board);
-    }
-
-    return result;
-}
-
-void day04Part1()
+bool bingo(vector<int> board)
 {
-    std::cout << "day 4 part 1" << std::endl;
-    std::vector<std::string> input = readFile("../input");
-    std::vector<int> numbers = stringToIntArray(input[0], ',');
-    std::vector<std::vector<std::vector<int>>> boards = computeGameBoard(input);
-    for (int i = 0; i < numbers.size(); i++) {
-        updateBoard(boards, numbers[i]);
-        if (checkWinnerBoard(boards) != -1) {
-            std::cout << "winner is " << checkWinnerBoard(boards) << std::endl;
-            std::cout << "winner score = " << computeResult(boards[checkWinnerBoard(boards)], numbers[i]) << std::endl;
-            return;
+    int sum = 0;
+    for(int i=0; i<5; i++)
+    { // Check rows
+        sum = 0;
+        for(int j=0; j<5; j++) sum += board[i*5+j];
+        if(sum==-5) return true;
+    }
+    for(int i=0; i<5; i++)
+    { // Check cols
+        sum = 0;
+        for(int j=0; j<5; j++) sum += board[i+j*5];
+        if(sum==-5) return true;
+    }
+    return false;
+}
+
+int sum_unmarked(vector<int> *board)
+{
+    int sum = 0;
+    for(auto num: *board)
+    {
+        if(num!=-1) sum += num;
+    }
+    return sum;
+}
+
+bool iswinner(vector<int> winners,int m)
+{
+    for(auto num: winners)
+    {
+        if(num==m) return true;
+    }
+    return false;
+}
+
+std::pair<vector<vector<int>>,std::vector<int>> buildGame() {
+    std::vector<int> nums;
+    vector<vector<int>> boards;
+    std::vector<int> board;
+    ifstream fid("../input");
+    string line;
+    bool read_nums = false;
+
+    while(getline(fid,line))
+    {
+        if(line.empty())
+        {
+            board.clear();
+            continue;
+        }
+        stringstream ss(line);
+        string value;
+        if(!read_nums)
+        {
+            // Read up drawn numbers
+            while(getline(ss,value,',')) nums.push_back(stoi(value));
+            read_nums = true;
+        }
+        else
+        {
+            while(ss >> value) board.push_back(stoi(value));
+            if(board.size()==25)
+            {
+                boards.push_back(board);
+            }
         }
     }
-    for (int i = 0; i < boards.size(); i++) {
-        std::cout << "BOARD#" << i << std::endl;
-        printBoard(boards[i]);
-        std::cout << std::endl;
-    }
+    return std::make_pair(boards,nums);
 }
 
-
-void day04Part2()
+int day04Part1()
 {
+    std::pair<vector<vector<int>>,std::vector<int>> res = buildGame();
+    vector<vector<int>> boards = res.first;
+    std::vector<int> nums = res.second;
+    vector<int> winners,*boardp;
+    int result1,result2;
 
+    int nb = boards.size();
+
+    for(auto num: nums)
+    {
+        for(int i=0; i<nb; i++)
+        {
+            boardp = &boards[i];
+            if(iswinner(winners,i)) continue;
+            replace(boardp->begin(),boardp->end(),num,-1);
+            if(bingo(*boardp))
+            {
+                if(winners.size()==0) result1 = sum_unmarked(boardp)*num;
+                if(winners.size()==nb-1) result2 = sum_unmarked(boardp)*num;
+                winners.push_back(i);
+            }
+        }
+    }
+
+    printf("p1: %d\n", result1);
+    printf("p2: %d\n", result2);
+    return 0;
 }
+

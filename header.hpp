@@ -24,6 +24,9 @@ void day05Part2();
 void day06Part1();
 void day06Part2();
 
+void day07Part1();
+void day07Part2();
+
 
 std::vector<int> readNumberInputFile(std::string fileName);
 std::vector<std::string> readFile(std::string fileName);

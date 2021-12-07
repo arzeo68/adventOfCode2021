@@ -32,53 +32,17 @@ int test(std::vector<int> start, int day) {
 
 }
 
-
-std::vector<int> nextGeneration(std::vector<int> current)
-{
-    int toAdd = 0;
-    for(int i = 0; i < current.size(); i++)
-    {
-        if (current[i] == 0) {
-            current[i] = 6;
-            toAdd++;
-        } else {
-            current[i]--;
-        }
-
-    }
-    for (int i = 0; i < toAdd; i++)
-    {
-        current.push_back(8);
-    }
-
-    for (int i = 0; i < current.size(); i++)
-    {
-        std::cout << current[i] << " ";
-    }
-    std::cout << std::endl;
-
-    return current;
-}
-
-std::vector<int> runSimulation(std::vector<int> start, int day) {
-    for (int i = 1; i <= day; i++) {
-        start = nextGeneration(start);
-        std::cout << "day: " << i << "  number of fish: " << start.size() << std::endl;
-    }
-    std::cout << "Day " << day << ": " << start.size() << std::endl;
-    return start;
-}
-
 void day06Part1()
 {
     std::vector<std::string> input = readFile("../input");
     std::vector<int> start = stringToIntArray(input[0], ',');
-//    runSimulation(start, 20);
-    test(start, 256);
+    test(start, 80);
 
 }
 
 void day06Part2()
 {
-
+    std::vector<std::string> input = readFile("../input");
+    std::vector<int> start = stringToIntArray(input[0], ',');
+    test(start, 256);
 }
